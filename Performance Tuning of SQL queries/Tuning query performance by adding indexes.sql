@@ -1,3 +1,7 @@
+alter table order_items ADD	
+	foreign key (order_item_order_id) REFERENCES orders (order_id);
+--First add foreign key to related items
+
 create index orders_order_customer_id_idx
 on orders(order_customer_id);
 
