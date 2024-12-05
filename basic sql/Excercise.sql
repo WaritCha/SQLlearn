@@ -102,9 +102,46 @@ order by 4 desc,1;
 -- * Output should contain all the fields from `categories` along with the revenue as `category_revenue`.
 -- * Consider only `COMPLETE` and `CLOSED` orders
 
+select cat.category_id, cat.category_department_id, cat.category_name , 
+	round(sum(oi.order_item_subtotal)::numeric,2) as category_revenue
+    from orders as o    
+        join order_items as oi on o.order_id = oi.order_item_order_id
+        JOIN products as p on oi.order_item_product_id = p.product_id
+        JOIN categories as cat on p.product_category_id = cat.category_id
+where  o.order_status in ('COMPLETE','CLOSED') and to_char(o.order_date,'yyyy-MM') = '2014-01'
+group by 1,2,3
+order by 1
+
 -- ### Exercise 5 - Product Count Per Department
 
 -- Get the count of products for each department.
 -- * Tables - `departments`, `categories`, `products`
 -- * Data should be sorted in ascending order by `department_id`
 -- * Output should contain all the fields from `departments` and the product count as `product_count`
+
+-- there are quality of data issue where the count of products does not match the count of joined table between 3 tables.
+-- first check to count of products
+select count(*) from products --which return 1345
+--second check count of joined table
+select count(*) from (
+	select d.department_id, d.department_name
+    from departments as d   
+		JOIN categories as c on d.department_id = c.category_department_id
+        join products as p on c.category_id = p.product_category_id
+		) as q
+         --- which return 1081
+-- This means thhat there are 264 products that has no linkage to department
+-- We can move forward and ignore those products then get the data from department 
+
+select d.department_id, d.department_name, count(*) as department_count
+    from departments as d   
+		JOIN categories as c on d.department_id = c.category_department_id
+        join products as p on c.category_id = p.product_category_id
+         
+group by 1,2
+order by 1
+
+         
+
+
+
