@@ -37,11 +37,16 @@ order by 4 desc
 -- * Output should contain all the fields from `customers`
 -- * Make sure to run below provided validation queries and validate the output.
 
+select count(*) from customers --to get number of all customers as X
+
 SELECT count(DISTINCT order_customer_id)
 FROM orders
-WHERE to_char(order_date, 'yyyy-MM') = '2014-01';
+WHERE to_char(order_date, 'yyyy-MM') = '2014-01'; --to get number of customer who ordered on 2014-01 as Y
 
--- filter after full outer join
+-- Our result should be X - Y
+--There are 2 ways to do this
+
+-- 1. filter after full outer join
 SELECT count(*)
 FROM customers;
 
@@ -58,7 +63,7 @@ from customers as c
 WHERE o.order_customer_id is null
 order by 1
 
---Or using not exists command
+--2. Or using not exists command
 select c.*
 from customers as c
 where not exists(
