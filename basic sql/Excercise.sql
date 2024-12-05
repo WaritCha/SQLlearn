@@ -82,6 +82,18 @@ order by 1
 -- * If there are no orders placed by customer, then the corresponding revenue for a given customer should be 0.
 -- * Consider only `COMPLETE` and `CLOSED` orders
 
+select c.customer_id,c.customer_fname,c.customer_lname, 
+   COALESCE(round(sum(order_item_subtotal::numeric),2), 0)as customer_revenue
+    from orders as o    
+    FULL OUTER JOIN customers as c on o.order_customer_id = c.customer_id
+        full outer join order_items as oi on o.order_id = oi.order_item_order_id
+        FULL OUTER JOIN products as p on oi.order_item_product_id = p.product_id
+        FULL OUTER JOIN categories as cat p.product_category_id = cat.category_id
+        and to_char(o.order_date,'yyyy-MM') = '2014-01' 
+        and o.order_status in ('COMPLETE','CLOSED')
+GROUP BY 1,2,3
+order by 4 desc,1;
+
 -- ### Exercise 4 - Revenue Per Category
 
 -- Get the revenue generated for each category for the month of 2014 January
