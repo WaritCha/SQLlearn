@@ -41,6 +41,7 @@ SELECT count(DISTINCT order_customer_id)
 FROM orders
 WHERE to_char(order_date, 'yyyy-MM') = '2014-01';
 
+-- filter after full outer join
 SELECT count(*)
 FROM customers;
 
@@ -57,6 +58,15 @@ from customers as c
 WHERE o.order_customer_id is null
 order by 1
 
+--Or using not exists command
+select c.*
+from customers as c
+where not exists(
+	select o.order_customer_id
+	from orders as o 
+	where c.customer_id = o.order_customer_id	
+			AND (to_char(o.order_date, 'yyyy-MM') = '2014-01') )
+order by 1
 
 -- ### Exercise 3 - Revenue Per Customer
 
